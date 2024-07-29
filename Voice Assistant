@@ -1,0 +1,91 @@
+import pyttsx3 as p
+import speech_recognition as sr
+from YT_auto import Music
+from selenium_web import Infow  
+
+
+engine = p.init()
+rate = engine.getProperty('rate')
+engine.setProperty('rate', 180)
+voices = engine.getProperty('voices')
+engine.setProperty('voice', voices[1].id)
+
+def speak(text):
+    engine.say(text)
+    engine.runAndWait()
+
+
+r = sr.Recognizer()
+
+
+speak("Hello sir I am your voice assistant. How are you")
+with sr.Microphone() as source:
+    r.energy_threshold = 10000
+    r.adjust_for_ambient_noise(source, 1.2)
+    print("listening")
+    try:
+        audio = r.listen(source)
+        text = r.recognize_google(audio)
+        print(text)
+    except sr.UnknownValueError:
+        print("Sorry, I did not understand that.")
+        text = ""
+    except sr.RequestError:
+        print("Sorry, there was an error with the request.")
+        text = ""
+
+if all(word in text for word in ["what", "about", "you"]):
+    speak("I am having a good day sir")
+
+speak("What can I do for you")
+
+with sr.Microphone() as source:
+    r.energy_threshold = 10000
+    r.adjust_for_ambient_noise(source, 1.2)
+    print("listening.....")
+    try:
+        audio = r.listen(source)
+        text2 = r.recognize_google(audio)
+        print(text2)
+    except sr.UnknownValueError:
+        print("Sorry, I did not understand that.")
+        text2 = ""
+    except sr.RequestError:
+        print("Sorry, there was an error with the request.")
+        text2 = ""
+
+if "information" in text2:
+    speak("You need information related to which topic?")
+    with sr.Microphone() as source:
+        r.energy_threshold = 10000
+        r.adjust_for_ambient_noise(source, 1.2)
+        print("listening.....")
+        try:
+            audio = r.listen(source)
+            infor = r.recognize_google(audio)
+            speak(f"Searching {infor} on Wikipedia")
+            assist = Infow()  
+            assist.get_info(infor)
+        except sr.UnknownValueError:
+            print("Sorry, I did not understand that.")
+        except sr.RequestError:
+            print("Sorry, there was an error with the request.")
+
+elif "play" in text2 and "video" in text2:
+    speak("You want me to play which video?")
+    with sr.Microphone() as source:
+        r.energy_threshold = 10000
+        r.adjust_for_ambient_noise(source, 1.2)
+        print("listening.....")
+        try:
+            audio = r.listen(source)
+            vid = r.recognize_google(audio)
+            print(f"Playing {vid} on YouTube")
+            speak(f"Playing {vid} on YouTube")
+            assist = Music()  
+            assist.play(vid)
+        except sr.UnknownValueError:
+            print("Sorry, I did not understand that.")
+        except sr.RequestError:
+
+            print("Sorry, there was an error with the request.")
